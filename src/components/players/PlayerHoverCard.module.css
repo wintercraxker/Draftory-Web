@@ -1,0 +1,422 @@
+.card {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  width: min(340px, calc(100vw - 16px));
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+  scrollbar-width: thin;
+  padding: 0;
+  border: 1px solid #44364f;
+  border-radius: 16px;
+  background: #151218;
+  color: #ece6f1;
+  box-shadow: 0 16px 48px #0009;
+  z-index: 2147482000;
+  animation: appear 0.14s ease-out;
+  font:
+    14px/1.5 var(--font-geist-sans),
+    sans-serif;
+}
+.card:popover-open {
+  display: block;
+}
+.header {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 56px;
+  grid-template-areas: "avatar copy medal" "details details details";
+  align-items: center;
+  gap: 13px 12px;
+  padding: 31px 18px 14px;
+  background: linear-gradient(130deg, #231a2b, #19151e);
+  border-bottom: 1px solid #302735;
+}
+.avatar {
+  grid-area: avatar;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex: none;
+  background: #29232f;
+  display: grid;
+  place-items: center;
+}
+.copy {
+  grid-area: copy;
+  min-width: 0;
+}
+.copy h2 {
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.4;
+  color: #fafafa;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+.copy > small {
+  display: block;
+  margin-top: 5px;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: #9f90ad;
+}
+.muted {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #b1a6bb;
+  margin: 0;
+}
+.copy > .muted {
+  margin-top: 3px;
+}
+.details {
+  grid-area: details;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-top: 11px;
+  border-top: 1px solid #352b3d;
+}
+.identityBadges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #b9a8ca;
+  flex: none;
+}
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: flex-end;
+}
+.socials a {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #3b3045;
+  border-radius: 7px;
+  background: #201927;
+  color: #cfc3d8;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+.socials a:hover {
+  border-color: #9175ac;
+  background: #30223e;
+}
+.socials svg {
+  width: 14px;
+  height: 14px;
+}
+.medal {
+  grid-area: medal;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 3px;
+  text-align: center;
+  font-size: 9px;
+  line-height: 1.4;
+  color: #c6b6d2;
+}
+.medal small {
+  display: block;
+  font-size: 8px;
+}
+.medalGraphic {
+  display: block;
+  width: 56px;
+  height: 56px;
+  flex: none;
+}
+.medalGraphic :global(.dota-medal) {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.medalGraphic :global(.dota-medal) img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.medalGraphic :global(.dota-medal-place) {
+  font-size: 9px;
+}
+.medalGraphic :global(.dota-medal-place[data-digits="4"]),
+.medalGraphic :global(.dota-medal-place[data-digits="5"]) {
+  font-size: 8px;
+}
+.medalGraphic :global(.dota-medal-place[data-digits="6"]),
+.medalGraphic :global(.dota-medal-place[data-digits="7"]) {
+  font-size: 7px;
+}
+.close {
+  position: absolute;
+  right: 8px;
+  top: 7px;
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #3b3045;
+  border-radius: 7px;
+  background: #241d2b;
+  color: #b8a8c6;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.close:hover {
+  background: #392b46;
+}
+.body {
+  padding: 14px 18px 17px;
+  display: grid;
+  gap: 14px;
+}
+.label {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: #a998b8;
+  text-transform: uppercase;
+  margin: 0;
+}
+.distinctions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.distinctions > div {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: #c8b9d5;
+}
+.competition {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 13px 0;
+  border-block: 1px solid #302735;
+  align-items: center;
+}
+.value {
+  font-size: 27px;
+  font-weight: 650;
+  line-height: 1.1;
+  color: #eee7f7;
+  margin: 0;
+}
+.value > span {
+  font-size: 10px;
+  font-weight: 500;
+  color: #b49bc8;
+}
+.rank {
+  font-size: 9px;
+  color: #94849f;
+  line-height: 1.6;
+  margin-top: 7px;
+}
+.rank strong {
+  display: block;
+  color: #cbbcd7;
+  font-weight: 500;
+  font-size: 10px;
+}
+.record {
+  text-align: right;
+  min-width: 0;
+}
+.record strong {
+  display: block;
+  font-size: 17px;
+  color: #dbcce7;
+}
+.record small {
+  display: block;
+  font-size: 9px;
+  color: #a99bb6;
+  line-height: 1.6;
+  margin-top: 5px;
+}
+.badges {
+  display: flex;
+  gap: 7px;
+  list-style: none;
+  padding: 0;
+  margin: 7px 0 0;
+}
+.badges li > span {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #3d3049;
+  border-radius: 8px;
+  background: #211a29;
+  color: #bfa7d7;
+  font-size: 10px;
+}
+.badges svg {
+  width: 17px;
+  height: 17px;
+}
+.badgeTooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 0;
+  z-index: 2;
+  width: 140px;
+  padding: 8px;
+  border: 1px solid #42364f;
+  border-radius: 7px;
+  background: #21182b;
+  color: #ece6f1;
+  font-size: 11px;
+  line-height: 1.5;
+  pointer-events: none;
+}
+.badges li > span:is(:hover, :focus-visible) .badgeTooltip {
+  display: block;
+}
+.clan {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px;
+  border: 1px solid #3a2e45;
+  border-radius: 10px;
+  background: #1e1825;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.clan:hover {
+  background: #261d2e;
+  border-color: #79608f;
+}
+.clan > span {
+  min-width: 0;
+}
+.clan strong {
+  display: block;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.clan small {
+  display: block;
+  font-size: 10px;
+  color: #a190ad;
+  line-height: 1.6;
+}
+.clan small:last-child {
+  color: #bda2d3;
+  font-size: 9px;
+}
+.clanShield {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex: none;
+}
+.link,
+.retry {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 37px;
+  padding: 8px 12px;
+  border: 1px solid #5b426e;
+  border-radius: 9px;
+  background: #30223c;
+  color: #ede5f6;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+.link:hover,
+.retry:hover {
+  background: #3c2b4b;
+  border-color: #9471ae;
+}
+.link svg {
+  flex: none;
+  transition: transform 0.15s;
+}
+.link:hover svg {
+  transform: translate(1px, -1px);
+}
+.card :is(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--hub-accent, #b6a1ed);
+  outline-offset: 3px;
+}
+.skeleton {
+  height: 16px;
+  border-radius: 5px;
+  background: #2a2233;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+.loading,
+.error {
+  padding: 62px 20px 20px;
+  display: grid;
+  gap: 14px;
+  min-height: 220px;
+}
+.error {
+  min-height: 0;
+}
+:global([data-player-hover]):focus-visible {
+  outline: 2px solid var(--hub-accent, #b6a1ed);
+  outline-offset: 3px;
+  border-radius: inherit;
+}
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .skeleton {
+    animation: none;
+  }
+  .card * {
+    transition: none !important;
+  }
+}
+
+.header:not(:has(.medal)) {
+  grid-template-columns: 48px minmax(0, 1fr);
+  grid-template-areas: "avatar copy" "details details";
+}

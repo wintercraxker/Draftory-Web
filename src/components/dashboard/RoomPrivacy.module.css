@@ -1,0 +1,149 @@
+.root {
+  border-block: 1px solid #302936;
+  padding: 19px 0;
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.heading h3 {
+  font-size: 14px;
+  font-weight: 650;
+  color: #f0e9f7;
+  line-height: 1.5;
+}
+.icon {
+  display: grid;
+  place-items: center;
+  width: 39px;
+  height: 43px;
+  border-radius: 10px;
+  background: #251c30;
+  border: 1px solid #493453;
+  color: #c4a7da;
+  flex: none;
+}
+.status {
+  display: inline-flex;
+  font-size: 10px;
+  color: #b5a9c0;
+  line-height: 1.8;
+  margin-top: 3px;
+}
+.status::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  align-self: center;
+  background: #9c8ba7;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.status[data-protected="true"] {
+  color: #d2b5e6;
+}
+.status[data-protected="true"]::before {
+  background: #c6a0e3;
+}
+.description {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #a79bb3;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.actions button {
+  min-height: 40px;
+  font-size: 11px;
+}
+.fields {
+  display: grid;
+  gap: 10px;
+  border: 0;
+  min-width: 0;
+  padding: 0;
+}
+.fields label {
+  font-size: 12px;
+  color: #ded0eb;
+  font-weight: 550;
+}
+.fields input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid #493b55;
+  border-radius: 9px;
+  background: #131016;
+  padding: 11px 12px;
+  color: #eee6f6;
+  font-size: 13px;
+  outline: none;
+}
+.fields input:focus-visible {
+  border-color: #a17cbb;
+  outline: 2px solid #a17cbb;
+  outline-offset: 2px;
+}
+.inputRow {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+.inputRow input {
+  flex: 1;
+}
+.inputRow button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  flex: none;
+  border: 1px solid #493b55;
+  border-radius: 9px;
+  background: #211929;
+  color: #bda7d0;
+}
+.root button:focus-visible {
+  outline: 2px solid var(--hub-accent, #b6a1ed);
+  outline-offset: 3px;
+}
+.help,
+.feedback {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #92839f;
+}
+.feedback[data-error="true"] {
+  color: #e4a4a4;
+}
+.confirmation {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  background: #211a29;
+  border: 1px solid #493453;
+  border-radius: 10px;
+}
+.confirmation strong {
+  font-size: 12px;
+  color: #ddd0e9;
+}
+.confirmation p {
+  font-size: 12px;
+  line-height: 1.75;
+  color: #b6a5c4;
+}
+.root :disabled {
+  cursor: wait;
+}
+.root:has(.fields:disabled) .help {
+  color: #a99ab6;
+}

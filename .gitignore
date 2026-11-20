@@ -1,0 +1,141 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.example
+*.env
+*.env.*
+
+# secrets, credentials and private identity material
+*.pem
+*.key
+*.pfx
+*.p12
+*.cer
+*.crt
+*.der
+*.jks
+*.keystore
+*.dpapi
+*vault*
+*credential*
+*keyring*
+*secrets*
+*.token
+*.secret
+.npmrc
+.yarnrc
+.netrc
+.config/gh/
+.ssh/
+
+# Neon, database and backup evidence
+backups/
+**/backups/
+*.sql.backup
+*.backup
+*.dump
+*.pgsql
+*.pgpass
+*.restore
+neon/
+**/neon/
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# generated sources
+/src/generated/prisma/
+/prisma/generated/
+
+# runtime output and private evidence
+/.tmp/
+**/.tmp/
+/backups/
+/logs/
+**/logs/
+*.log
+*.trace
+*.pid
+
+# Windows worker runtime
+/profiles/
+/private/
+/artifacts/
+/packages/
+/release/
+/deploy/private/
+/apps/dota-worker/adapter/bin/
+/apps/dota-worker/adapter/obj/
+**/bin/
+**/obj/
+**/publish/
+**/TestResults/
+*.dll
+*.exe
+*.msi
+*.nupkg
+
+# operating-system and editor state
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Portfolio checkout must not collect operational artifacts.
+/docs/
+*.aesgcm
+*.jsonl
+*.rdb
+*.age
+*.zip
+*.7z
+*.tar
+*.tar.gz
+**/vault/
+**/keyrings/
+**/receipts/
+**/diagnostics/
+**/incidents/
+**/recovery/
+**/production/
+!/.env.example
+!/apps/dota-worker/credential-envelope.mjs
+!/apps/dota-worker/credential-envelope.d.mts

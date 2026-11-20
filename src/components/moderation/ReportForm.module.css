@@ -1,0 +1,270 @@
+.form {
+  padding: 28px !important;
+  background: #131117;
+  color: #e5deed;
+  display: grid;
+  gap: 25px;
+  min-width: 0;
+}
+.form header {
+  display: grid;
+  gap: 12px;
+}
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: #b8a1d1;
+}
+.form p,
+.form small {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #a49aae;
+}
+.form small {
+  display: block;
+  font-size: 11px;
+}
+.form fieldset {
+  border: 0;
+  border-top: 1px solid #2b2533;
+  padding: 20px 0 0;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.form legend {
+  padding-right: 16px;
+  color: #d4c5e5;
+  font-size: 12px;
+  font-weight: 600;
+}
+.form label {
+  display: grid;
+  gap: 8px;
+  font-size: 12px;
+}
+.form input,
+.form textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #352c41;
+  border-radius: 9px;
+  background: #100e14;
+  padding: 12px 13px;
+  font: inherit;
+  font-size: 13px;
+  color: #eee7f6;
+  outline: none;
+}
+.form input:focus,
+.form textarea:focus {
+  border-color: #af91d0;
+  box-shadow: inset 0 0 0 1px #af91d0;
+}
+.form input::placeholder,
+.form textarea::placeholder {
+  color: #80758d;
+}
+.form textarea {
+  resize: vertical;
+}
+.lookup {
+  display: flex;
+  gap: 10px;
+}
+.lookup input {
+  flex: 1;
+}
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #1b1721;
+  border: 1px solid #3c304c;
+  border-radius: 10px;
+  padding: 13px;
+}
+.identity div {
+  flex: 1;
+  min-width: 0;
+}
+.identity strong {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.identity > svg {
+  color: #ad91cc;
+  flex: none;
+}
+.link {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.link > svg {
+  flex: none;
+  color: #a58cbf;
+}
+.counter {
+  text-align: right;
+}
+.attachments {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border: 1px dashed #463854;
+  border-radius: 10px;
+  padding: 18px;
+  margin-top: 8px;
+}
+.attachments > svg {
+  flex: none;
+  color: #b09ac8;
+}
+.attachments strong {
+  font-size: 12px;
+}
+.attachments div {
+  flex: 1;
+}
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-top: 20px;
+  border-top: 1px solid #2b2533;
+}
+.error {
+  color: #eaa0a0 !important;
+}
+.form :focus-visible {
+  outline: 2px solid #bda2dd;
+  outline-offset: 3px;
+}
+.form input:focus-visible,
+.form textarea:focus-visible {
+  outline: 0;
+}
+.form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+@media (max-width: 600px) {
+  .form {
+    padding: 19px !important;
+  }
+  .lookup {
+    flex-wrap: wrap;
+  }
+  .lookup input {
+    flex-basis: 100%;
+  }
+  .attachments {
+    flex-wrap: wrap;
+  }
+  .attachments div {
+    min-width: 180px;
+  }
+  .footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+.form {
+  grid-template-columns: minmax(0, 1fr);
+}
+.form > * {
+  min-width: 0;
+}
+.form fieldset {
+  grid-template-columns: minmax(0, 1fr);
+}
+.form label {
+  min-width: 0;
+}
+.form p,
+.form small,
+.form span {
+  overflow-wrap: anywhere;
+}
+.form :global(.settings-feedback) > span {
+  min-width: 0;
+}
+.form :global(.role-dropdown) {
+  width: 100%;
+  min-width: 0;
+}
+.form :global(.role-dropdown-trigger) {
+  width: 100%;
+  min-height: 44px;
+  justify-content: space-between;
+  border-radius: 9px;
+  background: #100e14;
+  border-color: #352c41;
+}
+.form :global(.role-dropdown-trigger):focus-visible {
+  outline: none;
+  border-color: #af91d0;
+  box-shadow: inset 0 0 0 1px #af91d0;
+}
+
+.fileButton {
+  position: relative;
+  display: inline-flex;
+  padding: 10px 13px;
+  border: 1px solid #51405f;
+  border-radius: 8px;
+  background: #281f31;
+  color: #dfc5f4;
+  font-size: 12px;
+  cursor: pointer;
+}
+.fileButton input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  cursor: pointer;
+}
+.fileButton:focus-within {
+  outline: 2px solid #b793d4;
+  outline-offset: 3px;
+}
+.fileButton:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 15px;
+}
+.previews figure {
+  position: relative;
+  padding: 8px;
+  border: 1px solid #3b3046;
+  border-radius: 9px;
+  background: #17121d;
+}
+.previews img {
+  width: 110px;
+  height: 74px;
+  object-fit: contain;
+}
+.previews figcaption {
+  font-size: 10px;
+  color: #ad9cba;
+  margin-top: 7px;
+}
+.previews figure button {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  padding: 4px !important;
+  background: #211929;
+}
+.attachments {
+  flex-wrap: wrap;
+}

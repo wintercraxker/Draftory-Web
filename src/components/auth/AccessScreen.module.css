@@ -1,0 +1,235 @@
+.screen {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 32px 24px;
+  background: #09090b;
+  color: #f3edf8;
+  box-sizing: border-box;
+}
+.composition {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 32px;
+  width: min(100%, 1000px);
+}
+.content {
+  min-width: 0;
+  padding: 16px 0;
+}
+.content h1 {
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.18;
+  text-wrap: balance;
+}
+.content p {
+  margin: 18px 0 26px;
+  max-width: 420px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #b1a4bd;
+  text-wrap: pretty;
+}
+.errorArt {
+  width: 100%;
+  max-width: 480px;
+  justify-self: center;
+}
+.errorArt img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(580px, 76dvh);
+  object-fit: contain;
+  background: transparent;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.actions a,
+.actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 12px 18px;
+  border: 1px solid #483652;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+.primary {
+  background: #9470b3;
+  color: #fff;
+}
+.secondary {
+  background: #18121e;
+  color: #ddd0e7;
+}
+.actions a:hover,
+.actions button:hover {
+  background: #65477d;
+}
+.actions a:focus-visible,
+.actions button:focus-visible {
+  outline: 2px solid #d6b7f2;
+  outline-offset: 4px;
+}
+.actions button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+.actions svg {
+  flex-shrink: 0;
+}
+.loaderComposition {
+  max-width: 980px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 44px;
+}
+.loaderEntrance {
+  width: 100%;
+  justify-self: center;
+  animation: characterEnter 0.6s ease-out both;
+}
+.loaderFloat {
+  animation: characterFloat 5s ease-in-out 0.6s infinite;
+}
+.loaderImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: min(740px, 86dvh);
+  object-fit: contain;
+  background: transparent;
+}
+.loading .content h1 {
+  font-size: clamp(24px, 3vw, 32px);
+}
+.loading .content p {
+  margin-bottom: 0;
+}
+.track {
+  height: 2px;
+  width: min(100%, 220px);
+  margin: 27px 0 0;
+  background: #2a2032;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.track span {
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: #bd94e3;
+  animation: staffSweep 1.6s ease-in-out infinite;
+}
+.loading {
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
+}
+.loading.leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+@keyframes characterEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes characterFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes staffSweep {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(350%);
+  }
+}
+@media (max-width: 640px) {
+  .screen {
+    padding: 22px 20px;
+  }
+  .composition,
+  .loaderComposition {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    max-width: 440px;
+  }
+  .content {
+    text-align: center;
+    padding: 0;
+  }
+  .content p {
+    margin: 14px auto 22px;
+  }
+  .content h1 {
+    font-size: 25px;
+  }
+  .errorArt {
+    max-width: min(340px, 48dvh);
+  }
+  .errorArt img {
+    max-height: none;
+  }
+  .loaderEntrance {
+    width: min(100%, calc(52dvh * 2 / 3));
+    max-width: 280px;
+  }
+  .loaderImage {
+    max-height: none;
+  }
+  .loading .content h1 {
+    font-size: 24px;
+  }
+  .track {
+    margin: 22px auto 0;
+  }
+  .actions {
+    justify-content: center;
+  }
+  .actions a,
+  .actions button {
+    padding: 11px 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loaderEntrance,
+  .loaderFloat,
+  .track span {
+    animation: none;
+  }
+  .track span {
+    width: 100%;
+    opacity: 0.6;
+  }
+  .loading,
+  .actions a,
+  .actions button {
+    transition: none;
+  }
+  .loading.leaving {
+    opacity: 1;
+  }
+}

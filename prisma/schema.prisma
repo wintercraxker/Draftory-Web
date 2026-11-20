@@ -1,0 +1,1174 @@
+// ============================================
+// DRAFTORY - target schema after approved legacy cleanup
+// ============================================
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// USER
+// ============================================
+
+model User {
+  competitiveMmr CompetitiveMmr? @relation("MmrSubject")
+  reviewedMmrs CompetitiveMmr[] @relation("MmrReviewer")
+  mmrEvents MmrReviewEvent[] @relation("MmrEventSubject")
+  mmrActions MmrReviewEvent[] @relation("MmrEventActor")
+  ledClans Clan[] @relation("ClanLeader")
+  clanMemberships ClanMembership[]
+  clanApplications ClanRequest[] @relation("ClanApplicant")
+  clanInvitationsCreated ClanRequest[] @relation("ClanInviter")
+  clanEvents ClanEvent[]
+
+  activeRoomParticipation ActiveRoomParticipation?
+  launchAuthorizations DotaLaunchControl[]
+
+  lifecycle AccountLifecycle?
+  roomAccessBudget RoomAccessBudget?
+  draftoryIdentity DraftoryIdentity?
+  staffAuthorization StaffAuthorization?
+  reportsFiled PlayerReport[] @relation("Reporter")
+  reportsReceived PlayerReport[] @relation("Reported")
+  reportsReviewed PlayerReport[] @relation("ReportReviewer")
+  reportsAssigned PlayerReport[] @relation("ReportAssignee")
+  auditActions StaffAuditLog[] @relation("StaffAuditActor")
+  auditReceived StaffAuditLog[] @relation("StaffAuditTarget")
+  sanctionsReceived PlayerSanction[] @relation("SanctionTarget")
+  sanctionsApplied PlayerSanction[] @relation("SanctionAdmin")
+  sanctionsRevoked PlayerSanction[] @relation("SanctionRevoker")
+  manualMedal ManualDotaMedal? @relation("MedalOwner")
+  medalsReviewed ManualDotaMedal[] @relation("MedalReviewer")
+  externalDotaCache DotaExternalCache[]
+  dotaManualSync DotaManualSync?
+  profileAvatar ProfileAvatar?
+  id          String  @id @default(cuid())
+  discordId   String? @unique
+  steamId     String? @unique
+  username    String
+  displayName String?
+  avatar      String?
+  customAvatarUrl String?
+  bio         String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  following Follow[] @relation("Following")
+  followers Follow[] @relation("Followers")
+
+  profile       Profile?
+  dotaAccount   DotaAccount?
+  rooms         Room[]            @relation("RoomCreator")
+  memberships   RoomMember[]
+  matchPlayers  MatchPlayer[]
+  pointWallet   PointWallet?
+  predictions   Prediction[]
+  draftChoices  DraftPick[]       @relation("DraftChooser")
+  draftPlayers  DraftPick[]       @relation("DraftPlayer")
+  achievements  UserAchievement[]
+  roomMessages  RoomMessage[]
+  roomEvents    RoomEvent[]
+  notifications Notification[]
+  sessions      AuthSession[]
+}
+
+model CompetitiveMmr {
+  userId String @id
+  user User @relation("MmrSubject", fields:[userId], references:[id], onDelete:Restrict)
+  declared Int
+  approved Int?
+  status String @default("UNVERIFIED")
+  revision Int @default(1)
+  declaredAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @default(now()) @db.Timestamptz
+  verifiedAt DateTime? @db.Timestamptz
+  reviewerId String?
+  reviewer User? @relation("MmrReviewer",fields:[reviewerId],references:[id],onDelete:Restrict)
+  @@index([status,updatedAt,userId],map:"CompetitiveMmr_review")
+}
+model MmrReviewEvent {
+  id String @id @db.Uuid
+  userId String
+  user User @relation("MmrEventSubject",fields:[userId],references:[id],onDelete:Restrict)
+  actorId String
+  actor User @relation("MmrEventActor",fields:[actorId],references:[id],onDelete:Restrict)
+  requestId String @db.Uuid
+  fingerprint String
+  action String
+  previous Json?
+  result Json
+  reason String
+  evidence String @default("")
+  createdAt DateTime @default(now()) @db.Timestamptz
+  @@unique([actorId,requestId])
+  @@index([userId,createdAt(sort:Desc),id],map:"MmrReviewEvent_user")
+}
+
+model DraftoryIdentity {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  publicId String @unique
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+}
+
+// Optional external statistics cache; unrelated to the lobby worker queue.
+model DotaExternalCache {
+  userId        String
+  user          User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  provider      String
+  category      String
+  resourceKey   String
+  fetchedAt     DateTime? @db.Timestamptz(6)
+  expiresAt     DateTime? @db.Timestamptz(6)
+  lastAttemptAt DateTime? @db.Timestamptz(6)
+  lastSuccessAt DateTime? @db.Timestamptz(6)
+  status        String @default("never_synced")
+  errorReason   String?
+  normalized    Json?
+  leaseToken    String? @db.Uuid
+  leaseUntil    DateTime? @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(6)
+
+  @@id([userId, provider, category, resourceKey])
+  @@index([expiresAt])
+  @@index([leaseUntil])
+}
+
+model DotaApiBudget {
+  provider     String @id
+  minuteStart  DateTime @db.Timestamptz(6)
+  minuteCount  Int @default(0)
+  dayStart     DateTime @db.Timestamptz(6)
+  dayCount     Int @default(0)
+  blockedUntil DateTime? @db.Timestamptz(6)
+  secondStart DateTime? @db.Timestamptz(6)
+  secondCount Int @default(0)
+  hourStart DateTime? @db.Timestamptz(6)
+  hourCount Int @default(0)
+}
+
+model DotaManualSync {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  lastSuccessfulManualSyncAt DateTime? @db.Timestamptz(6)
+  retryAfter DateTime? @db.Timestamptz(6)
+  leaseToken String? @db.Uuid
+  leaseUntil DateTime? @db.Timestamptz(6)
+  requestId String? @db.Uuid
+  outcome String?
+  report Json?
+}
+
+model DotaCatalogCache {
+  provider String @id
+  normalized Json
+  fetchedAt DateTime @db.Timestamptz(6)
+  expiresAt DateTime @db.Timestamptz(6)
+}
+
+model ProfileAvatar {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  version String @db.Uuid
+  bytes Bytes
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+}
+
+model AuthSession {
+  tokenHash String @id
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  @@index([userId, expiresAt])
+}
+
+model SteamLoginAttempt {
+  stateHash String @id
+  expiresAt DateTime
+  consumedAt DateTime?
+  responseNonce String? @unique
+  @@index([expiresAt])
+}
+
+// ============================================
+// FOLLOWS
+// ============================================
+
+model Follow {
+  id String @id @default(cuid())
+
+  followerId String
+  follower   User   @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+
+  followingId String
+  following   User   @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+// Virtual points and match predictions are independent of the retired legacy models.
+enum DotaRole {
+  CARRY
+  MID
+  OFFLANE
+  SUPPORT
+  HARD_SUPPORT
+}
+
+enum DotaVisibility {
+  UNKNOWN
+  PUBLIC
+  PRIVATE
+}
+
+enum MmrSource {
+  DECLARED
+  EXTERNAL
+  UNVERIFIED
+}
+
+enum RoomPhase {
+  WAITING
+  CHOOSING_CAPTAINS
+  DECIDING_FIRST_PICK
+  DRAFTING
+  READY
+  READY_CHECK
+  PREPARING
+  WAITING_FOR_PLAYERS
+  IN_GAME
+  FINISHED
+  CANCELLED
+}
+
+enum RoomFormation {
+  AUTOMATIC
+  CAPTAINS
+}
+
+enum FirstPickMethod {
+  ROLL
+  DICE
+  RPS
+}
+
+enum RoomTeam {
+  BENCH
+  RADIANT
+  DIRE
+}
+
+enum MatchSide {
+  RADIANT
+  DIRE
+}
+
+enum DraftStatus {
+  WAITING
+  DECIDING_FIRST_PICK
+  PICKING
+  COMPLETE
+  CANCELLED
+}
+
+enum ReadyCheckStatus {
+  PENDING
+  PASSED
+  FAILED
+  CANCELLED
+}
+
+enum MatchStatus {
+  QUEUED
+  LOBBY_SENT
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PredictionStatus {
+  PENDING
+  WON
+  LOST
+  VOID
+}
+
+enum PointTransactionType {
+  MATCH_WIN
+  MATCH_LOSS
+  PREDICTION_STAKE
+  PREDICTION_WIN
+  PREDICTION_REFUND
+  ACHIEVEMENT
+  ADMIN_ADJUSTMENT
+  LEGACY_IMPORT
+}
+
+enum RoomMessageKind {
+  USER
+  SYSTEM
+}
+
+model Profile {
+  socialLinks Json @default("{}")
+  userId                 String    @id
+  user                   User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  publicHandle           String    @unique
+  country                String?
+  region                 String?
+  visibility             String    @default("PUBLIC")
+  preferredRolePrimary   DotaRole
+  preferredRoleSecondary DotaRole?
+  elo                    Int       @default(5000)
+  xp                     BigInt    @default(0)
+  level                  Int       @default(1)
+  onboardingCompletedAt DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@index([elo, userId])
+}
+
+model DotaAccount {
+  userId          String         @id
+  user            User           @relation(fields: [userId], references: [id], onDelete: Restrict)
+  steamId         String?        @unique
+  dotaAccountId   String?        @unique
+  mmr             Int?
+  mmrSource       MmrSource      @default(UNVERIFIED)
+  visibility      DotaVisibility @default(UNKNOWN)
+  leaderboardRank Int?
+  steamPersonaName String?
+  steamProfileUrl String?
+  steamVisibility Int?
+  observedAt      DateTime?
+  updatedAt       DateTime       @updatedAt
+}
+
+model Room {
+  dotaAttemptAuthorizations DotaAttemptAuthorization[]
+  activeParticipations ActiveRoomParticipation[]
+  webPresence RoomPresenceState?
+  publicIdentity RoomIdentity?
+  reports PlayerReport[]
+  // Partial uniqueness on creatorId for nonterminal phases is managed in
+  // SQL migration 20261004160000_one_active_room_per_creator.
+  id              String          @id @default(cuid())
+  creatorId       String
+  creator         User            @relation("RoomCreator", fields: [creatorId], references: [id], onDelete: Restrict)
+  name            String
+  phase           RoomPhase       @default(WAITING)
+  formation       RoomFormation
+  firstPickMethod FirstPickMethod @default(ROLL)
+  mode            String
+  region          String
+  isPrivate       Boolean         @default(false)
+  passwordHash    String?
+  revision        Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  closedAt        DateTime?
+  members         RoomMember[]
+  drafts          Draft[]
+  readyChecks     ReadyCheck[]
+  matches         Match[]
+  messages        RoomMessage[]
+  events          RoomEvent[]
+
+  @@index([phase, isPrivate, createdAt])
+  @@index([creatorId, createdAt])
+}
+
+model RoomMember {
+  webConnections RoomPresenceConnection[]
+  roomId    String
+  userId    String
+  room      Room      @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  team      RoomTeam  @default(BENCH)
+  roomRole  DotaRole?
+  isCaptain Boolean   @default(false)
+  joinedAt  DateTime  @default(now())
+  leftAt    DateTime?
+
+  @@id([roomId, userId])
+  @@index([roomId, team, leftAt])
+  @@index([userId, leftAt])
+}
+
+model Draft {
+  id            String      @id @default(cuid())
+  roomId        String
+  room          Room        @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  version       Int         @default(1)
+  status        DraftStatus @default(WAITING)
+  firstPickSide MatchSide?
+  pickOrder     Json
+  pickCursor    Int         @default(0)
+  revision      Int         @default(0)
+  createdAt     DateTime    @default(now())
+  completedAt   DateTime?
+  picks         DraftPick[]
+
+  @@unique([roomId, version])
+}
+
+model DraftPick {
+  id        String    @id @default(cuid())
+  draftId   String
+  draft     Draft     @relation(fields: [draftId], references: [id], onDelete: Restrict)
+  ordinal   Int
+  team      MatchSide
+  captainId String
+  captain   User      @relation("DraftChooser", fields: [captainId], references: [id], onDelete: Restrict)
+  playerId  String
+  player    User      @relation("DraftPlayer", fields: [playerId], references: [id], onDelete: Restrict)
+  createdAt DateTime  @default(now())
+
+  @@unique([draftId, ordinal])
+  @@unique([draftId, playerId])
+  @@index([playerId])
+}
+
+model ReadyCheck {
+  id            String             @id @default(cuid())
+  roomId        String
+  room          Room               @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  matchId       String             @unique
+  match         Match              @relation(fields: [matchId, roomId], references: [id, roomId], onDelete: Restrict)
+  status        ReadyCheckStatus   @default(PENDING)
+  startedAt     DateTime           @default(now())
+  expiresAt     DateTime
+  completedAt   DateTime?
+  failureReason String?
+  players       ReadyCheckPlayer[]
+
+  @@unique([id, matchId])
+  @@unique([matchId, roomId])
+  @@index([roomId, startedAt])
+  @@index([status, expiresAt])
+}
+
+model ReadyCheckPlayer {
+  readyCheckId String
+  readyCheck   ReadyCheck  @relation(fields: [readyCheckId, matchId], references: [id, matchId], onDelete: Restrict)
+  matchId      String
+  userId       String
+  participant  MatchPlayer @relation(fields: [matchId, userId], references: [matchId, userId], onDelete: Restrict)
+  confirmedAt  DateTime?
+
+  @@id([readyCheckId, userId])
+}
+
+model Match {
+  dotaAttemptAuthorization DotaAttemptAuthorization?
+  terminalCleanup DotaTerminalCleanup?
+  launchControl DotaLaunchControl?
+
+  externalLink MatchExternalLink?
+  reports PlayerReport[]
+  dotaLobby              DotaLobby?
+  id                     String             @id @default(cuid())
+  roomId                 String?
+  room                   Room?              @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  attemptNumber          Int                @default(1)
+  status                 MatchStatus        @default(QUEUED)
+  mode                   String
+  region                 String
+  winningSide            MatchSide?
+  dotaMatchId            String?            @unique
+  dotaLobbyId            String?
+  createdAt              DateTime           @default(now())
+  lobbySentAt            DateTime?
+  startedAt              DateTime?
+  finishedAt             DateTime?
+  verifiedAt             DateTime?
+  durationSeconds        Int?
+  predictionsCloseAt     DateTime?
+  recognitionEndsAt      DateTime?
+  recognitionFinalizedAt DateTime?
+  revision               Int                @default(0)
+  teams                  MatchTeam[]
+  players                MatchPlayer[]
+  readyCheck             ReadyCheck?
+  predictions            Prediction[]
+  pointTransactions      PointTransaction[]
+
+  @@unique([roomId, attemptNumber])
+  @@unique([id, roomId])
+  @@index([status, startedAt])
+  @@index([finishedAt])
+}
+
+model MatchExternalLink {
+  matchId String @id
+  match Match @relation(fields: [matchId], references: [id], onDelete: Restrict)
+  dotaMatchId String @unique
+  lobbyId String
+  lobby DotaLobby @relation(fields:[lobbyId],references:[lobbyId],onDelete:Restrict,onUpdate:NoAction)
+  correlationId String @db.Uuid
+  workerId String
+  worker DotaWorker @relation(fields:[workerId],references:[id],onDelete:Restrict,onUpdate:NoAction)
+  observedAt DateTime @db.Timestamptz(6)
+  linkedAt DateTime @default(now()) @db.Timestamptz(6)
+  analytics MatchAnalyticsCache?
+}
+
+model MatchAnalyticsCache {
+  matchId String @id
+  link MatchExternalLink @relation(fields: [matchId], references: [matchId], onDelete: Restrict)
+  normalized Json?
+  fetchedAt DateTime? @db.Timestamptz(6)
+  expiresAt DateTime? @db.Timestamptz(6)
+  retryAfter DateTime? @db.Timestamptz(6)
+  errorCode String?
+  failures Int @default(0)
+  leaseToken String? @db.Uuid
+  leaseUntil DateTime? @db.Timestamptz(6)
+  @@index([expiresAt])
+}
+
+model RoomAccessBudget {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  windowStart DateTime @default(now()) @db.Timestamptz(6)
+  attempts Int @default(0)
+}
+
+model MatchTeam {
+  matchId String
+  side    MatchSide
+  match   Match         @relation(fields: [matchId], references: [id], onDelete: Restrict)
+  name    String?
+  score   Int?
+  players MatchPlayer[]
+
+  @@id([matchId, side])
+}
+
+model MatchPlayer {
+  heroId Int?
+  dotaLobbyPlayers DotaLobbyPlayer[]
+  matchId          String
+  userId           String
+  match            Match                 @relation(fields: [matchId], references: [id], onDelete: Restrict)
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Restrict)
+  teamSide         MatchSide
+  team             MatchTeam             @relation(fields: [matchId, teamSide], references: [matchId, side], onDelete: Restrict)
+  slot             Int
+  isCaptain        Boolean               @default(false)
+  roomRole         DotaRole?
+  mmrSnapshot      Int?
+  eloBefore        Int?
+  eloAfter         Int?
+  xpBefore         BigInt?
+  xpAfter          BigInt?
+  levelSnapshot    Int?
+  joinedAt         DateTime              @default(now())
+  eloHistory       EloHistory?
+  xpHistory        XpHistory?
+  readyStates      ReadyCheckPlayer[]
+  cancellationVote RoomCancellationVote?
+  commendSent      Commend?              @relation("CommendFrom")
+  commendsReceived Commend[]             @relation("CommendTo")
+  mvpVote          MvpVote?              @relation("MvpVoter")
+  mvpVotesReceived MvpVote[]             @relation("MvpCandidate")
+  mvpAward         MatchMvp?
+
+  @@id([matchId, userId])
+  @@unique([matchId, teamSide, slot])
+  @@index([userId, joinedAt])
+}
+
+// Fase D: additive worker migration prepared, NOT DEPLOYED.
+model DotaWorker {
+  terminalCleanups DotaTerminalCleanup[]
+  matchLinks MatchExternalLink[]
+  id String @id
+  steamId String @unique
+  secretRef String @unique
+  enabled Boolean @default(false)
+  heartbeatAt DateTime? @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  lobbies DotaLobby[]
+  jobs DotaJob[]
+}
+
+model DotaLobby {
+  terminalCleanup DotaTerminalCleanup?
+  launchControl DotaLaunchControl?
+
+  matchLinks MatchExternalLink[]
+  id String @id @db.Uuid
+  matchId String @unique
+  match Match @relation(fields: [matchId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  workerId String?
+  worker DotaWorker? @relation(fields: [workerId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  state String @default("QUEUED")
+  lobbyId String? @unique
+  correlationId String @unique @db.Uuid
+  // Technical bridge field, read/written with explicit SQL. Ignore in the generated
+  // client so a prepared, unapplied additive migration cannot break existing reads.
+  publicName String? @ignore
+  credentialsEnvelope Json? @ignore
+  secretRef String?
+  gcConfirmedAt DateTime? @db.Timestamptz(6)
+  lastObservedAt DateTime? @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  players DotaLobbyPlayer[] @relation("DotaLobbyRoster")
+  playerReferences DotaLobbyPlayer[] @relation("DotaLobbyReference")
+  jobs DotaJob[]
+  @@unique([id, matchId], map: "DotaLobby_id_match")
+}
+
+model DotaLobbyPlayer {
+  lobbyId String @db.Uuid
+  matchId String
+  userId String
+  lobby DotaLobby @relation("DotaLobbyRoster", fields: [lobbyId, matchId], references: [id, matchId], onDelete: Restrict, onUpdate: NoAction, map: "DotaLobbyPlayer_same_match")
+  lobbyReference DotaLobby @relation("DotaLobbyReference", fields: [lobbyId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  participant MatchPlayer @relation(fields: [matchId, userId], references: [matchId, userId], onDelete: Restrict, onUpdate: NoAction)
+  steamId String
+  team MatchSide
+  slot Int
+  observedTeam MatchSide?
+  observedSlot Int?
+  observedAt DateTime? @db.Timestamptz(6)
+  @@id([lobbyId, userId])
+  @@unique([lobbyId, steamId])
+  @@unique([lobbyId, team, slot])
+}
+
+model DotaJob {
+  id String @id @db.Uuid
+  lobbyId String @db.Uuid
+  lobby DotaLobby @relation(fields: [lobbyId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  kind String
+  idempotencyKey String @unique
+  status String @default("PENDING")
+  attempts Int @default(0)
+  maxAttempts Int @default(5)
+  availableAt DateTime @default(now()) @db.Timestamptz(6)
+  leaseUntil DateTime? @db.Timestamptz(6)
+  leaseToken String? @db.Uuid
+  workerId String?
+  worker DotaWorker? @relation(fields: [workerId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  dispatchedAt DateTime? @db.Timestamptz(6)
+  errorCode String?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  completedAt DateTime? @db.Timestamptz(6)
+  // Partial uniqueness, queue indexes and CHECKs are maintained in SQL.
+}
+
+model RoomCancellationVote {
+  matchId     String
+  userId      String
+  participant MatchPlayer @relation(fields: [matchId, userId], references: [matchId, userId], onDelete: Restrict)
+  createdAt   DateTime    @default(now())
+
+  @@id([matchId, userId])
+}
+
+model EloHistory {
+  matchId        String
+  userId         String
+  participant    MatchPlayer @relation(fields: [matchId, userId], references: [matchId, userId], onDelete: Restrict)
+  eloBefore      Int
+  eloChange      Int
+  eloAfter       Int
+  formulaVersion String
+  createdAt      DateTime    @default(now())
+
+  @@id([matchId, userId])
+  @@index([userId, createdAt])
+}
+
+model XpHistory {
+  matchId        String
+  userId         String
+  participant    MatchPlayer @relation(fields: [matchId, userId], references: [matchId, userId], onDelete: Restrict)
+  xpBefore       BigInt
+  xpChange       BigInt
+  xpAfter        BigInt
+  levelBefore    Int
+  levelAfter     Int
+  formulaVersion String
+  createdAt      DateTime    @default(now())
+
+  @@id([matchId, userId])
+  @@index([userId, createdAt])
+}
+
+model PointWallet {
+  userId       String             @id
+  user         User               @relation(fields: [userId], references: [id], onDelete: Restrict)
+  balance      BigInt             @default(0)
+  revision     Int                @default(0)
+  updatedAt    DateTime           @updatedAt
+  transactions PointTransaction[]
+}
+
+model PointTransaction {
+  id             String               @id @default(cuid())
+  walletId       String
+  wallet         PointWallet          @relation(fields: [walletId], references: [userId], onDelete: Restrict)
+  type           PointTransactionType
+  amount         BigInt
+  balanceAfter   BigInt
+  idempotencyKey String               @unique
+  matchId        String?
+  match          Match?               @relation(fields: [matchId], references: [id], onDelete: Restrict)
+  predictionId   String?
+  prediction     Prediction?          @relation(fields: [predictionId], references: [id], onDelete: Restrict)
+  reference      String?
+  createdAt      DateTime             @default(now())
+
+  @@index([walletId, createdAt])
+  @@index([matchId])
+  @@index([predictionId])
+}
+
+model Prediction {
+  freeParticipation Boolean @default(false)
+  resolutionEvidence Json?
+  id              String             @id @default(cuid())
+  matchId         String
+  match           Match              @relation(fields: [matchId], references: [id], onDelete: Restrict)
+  userId          String
+  user            User               @relation(fields: [userId], references: [id], onDelete: Restrict)
+  team            MatchSide
+  stakePoints     BigInt
+  odds            Decimal            @db.Decimal(10, 4)
+  potentialReturn BigInt
+  payoutPoints    BigInt?
+  status          PredictionStatus   @default(PENDING)
+  createdAt       DateTime           @default(now())
+  settledAt       DateTime?
+  transactions    PointTransaction[]
+
+  @@unique([matchId, userId])
+  @@index([userId, createdAt])
+  @@index([status, matchId])
+}
+
+model Commend {
+  matchId    String
+  fromUserId String
+  toUserId   String
+  sender     MatchPlayer @relation("CommendFrom", fields: [matchId, fromUserId], references: [matchId, userId], onDelete: Restrict)
+  recipient  MatchPlayer @relation("CommendTo", fields: [matchId, toUserId], references: [matchId, userId], onDelete: Restrict)
+  createdAt  DateTime    @default(now())
+
+  @@id([matchId, fromUserId])
+  @@index([toUserId, createdAt])
+}
+
+model MvpVote {
+  matchId     String
+  voterId     String
+  candidateId String
+  voter       MatchPlayer @relation("MvpVoter", fields: [matchId, voterId], references: [matchId, userId], onDelete: Restrict)
+  candidate   MatchPlayer @relation("MvpCandidate", fields: [matchId, candidateId], references: [matchId, userId], onDelete: Restrict)
+  createdAt   DateTime    @default(now())
+
+  @@id([matchId, voterId])
+  @@index([matchId, candidateId])
+}
+
+model MatchMvp {
+  matchId     String
+  userId      String
+  participant MatchPlayer @relation(fields: [matchId, userId], references: [matchId, userId], onDelete: Restrict)
+  source      String      @default("COMMENDS")
+  votes       Int
+  awardedAt   DateTime    @default(now())
+
+  @@id([matchId, userId])
+  @@index([userId, awardedAt])
+}
+
+model AchievementDefinition {
+  id          String            @id
+  name        String
+  description String
+  metric      String
+  target      Int
+  enabled     Boolean           @default(true)
+  rewardXp    Int               @default(0)
+  unlocks     UserAchievement[]
+}
+
+model UserAchievement {
+  userId        String
+  achievementId String
+  user          User                  @relation(fields: [userId], references: [id], onDelete: Restrict)
+  achievement   AchievementDefinition @relation(fields: [achievementId], references: [id], onDelete: Restrict)
+  unlockedAt    DateTime              @default(now())
+  xpReward      AchievementXpHistory?
+
+  @@id([userId, achievementId])
+  @@index([userId, unlockedAt])
+}
+
+model AchievementXpHistory {
+  userId String
+  achievementId String
+  unlock UserAchievement @relation(fields: [userId, achievementId], references: [userId, achievementId], onDelete: Restrict)
+  xpBefore BigInt
+  xpChange BigInt
+  xpAfter BigInt
+  levelBefore Int
+  levelAfter Int
+  formulaVersion String
+  createdAt DateTime @default(now())
+  @@id([userId, achievementId])
+  @@index([userId, createdAt])
+}
+
+model RoomIdentity {
+  roomId String @id
+  room Room @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  publicId String @unique
+  createdAt DateTime @default(now())
+}
+
+model RoomMessage {
+  id        String          @id @default(cuid())
+  roomId    String
+  room      Room            @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  authorId  String?
+  author    User?           @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  kind      RoomMessageKind @default(USER)
+  body      String
+  sequence  BigInt          @default(autoincrement())
+  createdAt DateTime        @default(now())
+
+  @@unique([roomId, sequence])
+}
+
+model RoomEvent {
+  id        String   @id @default(cuid())
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  actorId   String?
+  actor     User?    @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  type      String
+  payload   Json
+  revision  Int
+  createdAt DateTime @default(now())
+
+  @@unique([roomId, revision])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  type      String
+  payload   Json
+  createdAt DateTime  @default(now())
+  readAt    DateTime?
+
+  @@index([userId, readAt, createdAt])
+}
+
+model PlayerReport {
+  id String @id @default(cuid())
+  reporterId String
+  reporter User @relation("Reporter", fields: [reporterId], references: [id], onDelete: Restrict)
+  reportedUserId String
+  reportedUser User @relation("Reported", fields: [reportedUserId], references: [id], onDelete: Restrict)
+  roomId String?
+  room Room? @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  matchId String?
+  match Match? @relation(fields: [matchId], references: [id], onDelete: Restrict)
+  category String
+  subject String
+  description String
+  assignedToId String?
+  assignedTo User? @relation("ReportAssignee", fields:[assignedToId], references:[id], onDelete:Restrict, onUpdate:NoAction)
+  resolution String?
+  evidence Json?
+  status String @default("OPEN")
+  discordDelivery String @default("PENDING")
+  reviewedAt DateTime? @db.Timestamptz(6)
+  reviewedById String?
+  reviewedBy User? @relation("ReportReviewer", fields: [reviewedById], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  sanctions PlayerSanction[]
+  @@index([status, createdAt])
+  @@index([reporterId, createdAt])
+  @@index([reportedUserId, createdAt])
+}
+
+model StaffAuthorization {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  role String @default("ADMIN")
+  grantedAt DateTime @default(now()) @db.Timestamptz(6)
+  revokedAt DateTime? @db.Timestamptz(6)
+}
+
+model PlayerSanction {
+  id String @id @default(cuid())
+  userId String
+  user User @relation("SanctionTarget", fields: [userId], references: [id], onDelete: Restrict)
+  adminId String
+  admin User @relation("SanctionAdmin", fields: [adminId], references: [id], onDelete: Restrict)
+  reportId String?
+  report PlayerReport? @relation(fields: [reportId], references: [id], onDelete: Restrict)
+  publicReason String
+  internalNote String?
+  startsAt DateTime @default(now()) @db.Timestamptz(6)
+  endsAt DateTime? @db.Timestamptz(6)
+  kind String @default("SUSPENSION")
+  state String @default("ACTIVE")
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  revokedAt DateTime? @db.Timestamptz(6)
+  revokedById String?
+  revokedBy User? @relation("SanctionRevoker", fields: [revokedById], references: [id], onDelete: Restrict)
+  @@index([userId, state, endsAt])
+  @@index([reportId])
+}
+
+model StaffRolePermission {
+  role String
+  permission String
+  allowed Boolean
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  @@id([role, permission])
+}
+
+model StaffAuditLog {
+  id String @id @default(cuid())
+  actorId String
+  actor User @relation("StaffAuditActor",fields:[actorId],references:[id],onDelete:Restrict,onUpdate:NoAction)
+  targetId String?
+  target User? @relation("StaffAuditTarget",fields:[targetId],references:[id],onDelete:Restrict,onUpdate:NoAction)
+  permission String
+  action String
+  reason String
+  result String
+  changes Json
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  @@index([createdAt])
+  @@index([targetId, createdAt])
+  @@index([actorId, createdAt])
+}
+
+model ManualDotaMedal {
+  userId String @id
+  user User @relation("MedalOwner", fields: [userId], references: [id], onDelete: Restrict)
+  rankTier Int
+  state String @default("MANUAL_PENDING")
+  declaredAt DateTime @default(now()) @db.Timestamptz(6)
+  verifiedAt DateTime? @db.Timestamptz(6)
+  verifiedById String?
+  verifiedBy User? @relation("MedalReviewer", fields: [verifiedById], references: [id], onDelete: Restrict)
+}
+
+// Account erasure tombstone and versioned, opt-in/new-onboarding product tour.
+model AccountLifecycle {
+ userId String @id
+ user User @relation(fields:[userId],references:[id],onDelete:Restrict)
+ deletedAt DateTime? @db.Timestamptz(6)
+ tourEligible Boolean @default(false)
+ tourStatus String @default("NOT_STARTED")
+ tourStep Int @default(0)
+ tourVersion Int @default(1)
+ updatedAt DateTime @updatedAt @db.Timestamptz(6)
+}
+
+model DotaLaunchControl {
+  matchId String @id
+  match Match @relation(fields:[matchId],references:[id],onDelete:Restrict,onUpdate:NoAction)
+  authorizedById String
+  authorizedBy User @relation(fields:[authorizedById],references:[id],onDelete:Restrict,onUpdate:NoAction)
+  rosterHash String
+  lobbyId String? @unique @db.Uuid
+  lobby DotaLobby? @relation(fields:[lobbyId],references:[id],onDelete:Restrict,onUpdate:NoAction)
+  status String @default("ARMED")
+  launchRequestId String? @unique @db.Uuid
+  consumedAt DateTime? @db.Timestamptz(6)
+  startedObservedAt DateTime? @db.Timestamptz(6)
+  externalMatchId String? @unique
+  warningSituation String?
+  warningJournal Json @default("{}")
+  lastWarningAt DateTime? @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+}
+
+// Distinct from pre-start cancellation. Web producer freezes verified result authority.
+model DotaTerminalCleanup {
+  lobbyId String @id @db.Uuid
+  lobby DotaLobby @relation(fields:[lobbyId],references:[id],onDelete:Restrict,onUpdate:NoAction)
+  matchId String @unique
+  match Match @relation(fields:[matchId],references:[id],onDelete:Restrict,onUpdate:NoAction)
+  workerId String
+  worker DotaWorker @relation(fields:[workerId],references:[id],onDelete:Restrict,onUpdate:NoAction)
+  correlationId String @db.Uuid
+  externalMatchId String @unique
+  verifiedAt DateTime @db.Timestamptz(6)
+  status String @default("PENDING")
+  attempts Int @default(0)
+  availableAt DateTime @default(now()) @db.Timestamptz(6)
+  leaseToken String? @db.Uuid
+  leaseUntil DateTime? @db.Timestamptz(6)
+  departureEvidence Json?
+  errorCode String?
+  completedAt DateTime? @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  @@index([workerId,status,availableAt])
+}
+
+model RoomPresenceState {
+ roomId String @id
+ room Room @relation(fields:[roomId],references:[id],onDelete:Restrict,onUpdate:NoAction)
+ graceUntil DateTime @db.Timestamptz(6)
+ nextCheckAt DateTime @db.Timestamptz(6)
+ onlineUserIds Json @default("[]")
+ @@index([nextCheckAt],map:"RoomPresenceState_due")
+}
+
+model ActiveRoomParticipation {
+  userId String @id
+  roomId String
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  room Room @relation(fields: [roomId], references: [id], onDelete: Restrict)
+  @@index([roomId])
+}
+
+model RoomPresenceConnection {
+ roomId String
+ userId String
+ connectionId String @db.Uuid
+ member RoomMember @relation(fields:[roomId,userId],references:[roomId,userId],onDelete:Restrict,onUpdate:NoAction)
+ lastSeenAt DateTime @db.Timestamptz(6)
+ expiresAt DateTime @db.Timestamptz(6)
+ @@id([roomId,userId,connectionId])
+ @@index([roomId,expiresAt,userId],map:"RoomPresenceConnection_live")
+}
+
+model DotaAttemptAuthorization {
+  matchId String @id
+  match Match @relation(fields: [matchId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  roomId String
+  room Room @relation(fields: [roomId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  mode String
+  attemptCreatedAt DateTime @db.Timestamp(3)
+  rosterHash String
+  roster Json
+  operator String
+  reason String
+  createdAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(6)
+  expiresAt DateTime @db.Timestamptz(6)
+  consumedAt DateTime? @db.Timestamptz(6)
+  revokedAt DateTime? @db.Timestamptz(6)
+  revocationReason String?
+  audit DotaAttemptAuthorizationAudit[]
+}
+
+model DotaAttemptAuthorizationAudit {
+  id BigInt @id @default(autoincrement())
+  matchId String
+  authorization DotaAttemptAuthorization @relation(fields: [matchId], references: [matchId], onDelete: Restrict, onUpdate: NoAction)
+  action String
+  actor String
+  recordedAt DateTime @default(dbgenerated("clock_timestamp()")) @db.Timestamptz(6)
+  details Json
+}
+
+// Shared fixed-window abuse budgets. Keys are hashes, never credentials or payloads.
+model RequestBudget {
+  key String @id
+  attempts Int @default(1)
+  expiresAt DateTime @db.Timestamptz(6)
+  @@index([expiresAt])
+}
+
+model RequestLease {
+ id String @id
+ subject String
+ expiresAt DateTime @db.Timestamptz(6)
+ @@index([subject, expiresAt])
+}
+
+// Clan history is retained after departure/disbanding. Partial unique indexes and
+// deferred integrity triggers are defined in the additive SQL migration.
+model Clan {
+  id String @id @db.Uuid
+  name String
+  nameKey String
+  tag String
+  tagKey String
+  description String @default("")
+  leaderId String
+  leader User @relation("ClanLeader",fields:[leaderId],references:[id],onDelete:Restrict)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @db.Timestamptz(3)
+  disbandedAt DateTime? @db.Timestamptz(3)
+  shield Bytes?
+  shieldVersion String? @db.Uuid
+  memberships ClanMembership[]
+  requests ClanRequest[]
+  events ClanEvent[]
+  @@index([updatedAt])
+}
+model ClanMembership {
+  id String @id @db.Uuid
+  clanId String @db.Uuid
+  userId String
+  role String
+  joinedAt DateTime @default(now()) @db.Timestamptz(3)
+  leftAt DateTime? @db.Timestamptz(3)
+  clan Clan @relation(fields:[clanId], references:[id], onDelete:Restrict)
+  user User @relation(fields:[userId],references:[id],onDelete:Restrict)
+  @@index([clanId,leftAt])
+  @@index([userId,leftAt])
+}
+model ClanRequest {
+  id String @id @db.Uuid
+  clanId String @db.Uuid
+  userId String
+  kind String
+  state String @default("PENDING")
+  createdById String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  resolvedAt DateTime? @db.Timestamptz(3)
+  clan Clan @relation(fields:[clanId], references:[id], onDelete:Restrict)
+  applicant User @relation("ClanApplicant",fields:[userId],references:[id],onDelete:Restrict)
+  creator User @relation("ClanInviter",fields:[createdById],references:[id],onDelete:Restrict)
+  @@index([clanId,state])
+  @@index([userId,state])
+}
+model ClanEvent {
+  id String @id @db.Uuid
+  clanId String @db.Uuid
+  actorId String
+  requestId String @db.Uuid
+  kind String
+  fingerprint String
+  details Json @default("{}")
+  result Json
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  clan Clan @relation(fields:[clanId], references:[id], onDelete:Restrict)
+  actor User @relation(fields:[actorId],references:[id],onDelete:Restrict)
+  @@unique([actorId,requestId])
+  @@index([clanId,createdAt])
+}

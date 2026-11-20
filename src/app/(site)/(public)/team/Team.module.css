@@ -1,0 +1,293 @@
+.team {
+  padding-top: 24px;
+}
+.team :global(.team-nav-link-active) {
+  color: #ceb4e5;
+}
+.card {
+  background: #111014;
+  border: 1px solid #2c2731;
+  border-radius: 18px;
+  padding: 22px;
+  min-width: 0;
+  transition:
+    border-color 0.18s,
+    transform 0.18s;
+}
+.card:hover {
+  border-color: #685075;
+  transform: translateY(-2px);
+}
+.owner {
+  padding: 26px;
+  background: #151019;
+  border-color: #4b355c;
+}
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  min-width: 0;
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 58px;
+  height: 58px;
+  overflow: hidden;
+  border-radius: 15px;
+  background: #292230;
+  color: #d6c4e5;
+  font-size: 21px;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.owner .avatar {
+  width: 92px;
+  height: 92px;
+  font-size: 32px;
+  border-radius: 20px;
+}
+.name {
+  font-size: 18px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  color: #f2edf6;
+}
+.owner .name {
+  font-size: 25px;
+}
+.description {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #a79bad;
+  margin-top: 8px;
+}
+.card a:focus-visible {
+  outline: 2px solid #c8a1e6;
+  outline-offset: 5px;
+  border-radius: 4px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  border-radius: 20px;
+  padding: 3px 8px;
+  color: #d2b7e6;
+  border: 1px solid #5b426d;
+  background: #271d30;
+}
+.helper {
+  color: #dfb68a;
+  border-color: #61492f;
+  background: #282017;
+}
+.community {
+  color: #8ad4ee;
+  border-color: #315667;
+  background: #14222a;
+}
+.empty {
+  padding: 22px;
+  border: 1px dashed #3b3045;
+  border-radius: 15px;
+  color: #a99bb4;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.help {
+  color: #9c90a7;
+  font-size: 12px;
+  line-height: 1.8;
+  margin-bottom: 18px;
+}
+.warning {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 18px;
+  background: #201923;
+  border: 1px solid #4a3552;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #d4bddc;
+  margin-top: 24px;
+}
+.warning button {
+  color: #e2c1f4;
+  text-decoration: underline;
+}
+.skeleton {
+  height: 145px;
+  background: #18141e;
+  border: 1px solid #302636;
+  border-radius: 18px;
+}
+.rank {
+  object-fit: contain;
+}
+@media (max-width: 600px) {
+  .team {
+    padding-top: 10px;
+  }
+  .card {
+    padding: 19px;
+  }
+  .owner {
+    padding: 23px;
+  }
+  .owner .avatar {
+    width: 72px;
+    height: 72px;
+  }
+  .owner .name {
+    font-size: 22px;
+  }
+  .identity {
+    gap: 13px;
+  }
+  .warning {
+    align-items: flex-start;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+  .card:hover {
+    transform: none;
+  }
+}
+
+.content {
+  min-width: 0;
+  flex: 1;
+}
+.nameRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px 10px;
+}
+.badge {
+  flex: none;
+  white-space: nowrap;
+}
+.name a:hover {
+  color: #d2b7e6;
+}
+.owner .avatar {
+  width: 80px;
+  height: 80px;
+}
+.card:hover {
+  transform: none;
+}
+
+.hero {
+  padding-bottom: 30px;
+}
+.hero h1 {
+  font-size: clamp(38px, 5vw, 58px);
+  letter-spacing: -0.045em;
+}
+.hero > div {
+  gap: 18px;
+}
+.hero p {
+  max-width: 630px;
+}
+.name {
+  transition: color 0.18s;
+}
+.name:hover,
+.name a:hover {
+  color: var(--name-hover, #c7a8e5);
+}
+.card[data-team-member="OWNER"] {
+  --name-hover: #c9a1ec;
+}
+.card[data-team-member="HELPER"] {
+  --name-hover: #efa85a;
+}
+.card[data-team-member="Supervisor"] {
+  --name-hover: #80d7f4;
+}
+.card[data-team-member="SPONSOR"] {
+  --name-hover: #e8c478;
+  border-color: #58482e;
+}
+.sponsorPlaceholder {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #16130f;
+  border-color: #4b3c25;
+}
+.sponsorPlaceholder h3 {
+  color: #e2c689;
+}
+.sponsorPlaceholder .description {
+  margin-top: 5px;
+}
+.badge:has(img[src*="patrocinador"]) {
+  color: #e7c780;
+  background: #292115;
+  border-color: #65502b;
+}
+.mobileNav {
+  display: none;
+}
+.hero p:first-child {
+  color: #a58cb8;
+}
+@media (max-width: 1023px) {
+  .mobileNav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 25px 0 8px;
+  }
+  .mobileNav a {
+    padding: 8px 11px;
+    background: #17121e;
+    border: 1px solid #332a3d;
+    border-radius: 8px;
+    color: #b4a3c1;
+    font-size: 11px;
+  }
+  .mobileNav a[aria-current] {
+    border-color: #88639f;
+    color: #e5d3f2;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .name {
+    transition: none;
+  }
+}
+/* Legacy Home positional selectors must not decorate member cards. */
+.team .card > .identity::after {
+  content: none;
+  background-image: none;
+  display: none;
+}
+
+.name {
+  cursor: default;
+}
+
+.staffIcon {
+  filter: hue-rotate(32deg);
+}
+
+.sponsorIcon {
+  filter: brightness(1.4) sepia(1) saturate(1.2) hue-rotate(350deg);
+}

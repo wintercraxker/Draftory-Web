@@ -1,0 +1,42 @@
+/* Fixed outside the animated hero: its containing block is the viewport. */
+.ribbon {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 94px;
+  height: 94px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 40;
+}
+.ribbon span {
+  position: absolute;
+  top: 19px;
+  right: -33px;
+  width: 142px;
+  padding: 6px 0;
+  transform: rotate(45deg);
+  background: var(--hub-accent, #b6a1ed);
+  color: #16121e;
+  border-block: 1px solid var(--hub-accent, #b6a1ed);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.18em;
+  text-align: center;
+}
+/* The ribbon ends above the navbar's interactive controls on narrow screens. */
+@media (max-width: 1200px) {
+  .ribbon {
+    width: 44px;
+    height: 28px;
+  }
+  .ribbon span {
+    width: 77px;
+    top: 5px;
+    right: -22px;
+    padding: 3px 0;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+}

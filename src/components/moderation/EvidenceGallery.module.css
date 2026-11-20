@@ -1,0 +1,61 @@
+﻿.root {
+  min-width: 0;
+}
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+.grid button {
+  width: 180px;
+  max-width: 100%;
+  padding: 8px;
+  border: 1px solid #44324f;
+  background: #17121e;
+  border-radius: 10px;
+  text-align: left;
+  color: #b8a6c5;
+  font-size: 11px;
+}
+.grid img {
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
+}
+.grid button > span {
+  display: block;
+  padding-top: 8px;
+}
+.grid button:focus-visible {
+  outline: 2px solid #bb91dc;
+  outline-offset: 3px;
+}
+.viewer {
+  background: #151019;
+  border: 1px solid #44324f;
+  border-radius: 15px;
+  padding: 20px;
+  color: #e7dcee;
+}
+.viewer header,
+.viewer footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.viewer h3 {
+  font-size: 14px;
+}
+.viewer > img {
+  width: 100%;
+  height: min(60vh, 650px);
+  object-fit: contain;
+  margin-block: 18px;
+}
+.viewer footer span {
+  font-size: 11px;
+  color: #9f8eae;
+}

@@ -1,0 +1,44 @@
+.trigger {
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+.trigger:hover,
+.trigger[aria-expanded="true"] {
+  background: #251c2e;
+  border-color: #765589;
+}
+.trigger:focus-visible,
+.menu a:focus-visible,
+.menu button:focus-visible {
+  outline: 2px solid #c8a1e6;
+  outline-offset: 3px;
+}
+.menu a,
+.menu button {
+  cursor: pointer;
+}
+.menu a:hover,
+.menu button:hover {
+  background: #251c2e;
+}
+.trigger[aria-expanded="true"] > svg {
+  transform: rotate(180deg);
+}
+.trigger > svg {
+  transition: transform 0.15s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .trigger,
+  .trigger > svg {
+    transition: none;
+  }
+}
+
+/* Keep the existing account control inside the narrow public navbar. */
+@media (max-width: 600px) {
+  .trigger .name {
+    max-width: clamp(28px, calc(100vw - 330px), 112px);
+  }
+}
