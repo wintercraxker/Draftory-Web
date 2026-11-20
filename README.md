@@ -11,7 +11,15 @@
   <img alt="Vercel" src="https://img.shields.io/badge/Vercel-18181B?style=for-the-badge&amp;logo=vercel&amp;logoColor=white">
 </p>
 
-<p align="center"><a href="https://draftory.lol/"><strong>Visit Draftory</strong></a></p>
+<p align="center">
+  <a href="https://draftory.lol/"><strong>Visit Draftory</strong></a>
+</p>
+
+<p align="center">
+  <a href="https://draftory.lol/">
+    <img src="imgr/preview.png" alt="Draftory — Dota 2 competitive community platform preview" width="850">
+  </a>
+</p>
 
 ## 〢 💭 What is Draftory?
 
@@ -34,6 +42,8 @@ Steam sign-in and persistent accounts require a configured backend. Live match c
 
 Explore the responsive landing page on [draftory.lol](https://draftory.lol/), or run the local demo below to see the interface with sample data.
 
+The screenshot above shows the Draftory web interface.
+
 ## 〢 🛠️ Tech Stack
 
 - **Interface:** Next.js 16.4.6 (App Router), React 19.2.8, TypeScript 5.9.3, and Tailwind CSS 4.3.3.
@@ -49,7 +59,8 @@ Draftory-Web/
 ├── src/lib/           Authentication, room logic, and data access
 ├── apps/dota-worker/  Web-facing queue, lobby, and availability modules
 ├── prisma/            Data model and Prisma schema
-└── public/            Interface assets
+├── public/            Interface assets
+└── imgr/              README preview image
 ```
 
 See [the shared modules README](apps/dota-worker/README.md) for the boundary between the web app and match automation.
