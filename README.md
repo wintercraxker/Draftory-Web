@@ -1,17 +1,17 @@
-<div align="center">
+<h1 align="center">Draftory</h1>
 
-<h1>Draftory</h1>
+<p align="center"><em>A full-stack community platform for custom Dota 2 matches.</em></p>
 
-**A full-stack community platform for custom Dota 2 matches**
+<p align="center">
+  <img alt="Next.js 16" src="https://img.shields.io/badge/Next.js_16-18181B?style=for-the-badge&amp;logo=nextdotjs&amp;logoColor=white">
+  <img alt="React 19" src="https://img.shields.io/badge/React_19-303038?style=for-the-badge&amp;logo=react&amp;logoColor=white">
+  <img alt="TypeScript 5" src="https://img.shields.io/badge/TypeScript_5-5E4E70?style=for-the-badge&amp;logo=typescript&amp;logoColor=white">
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-3C5650?style=for-the-badge&amp;logo=postgresql&amp;logoColor=white">
+  <img alt="Prisma 7" src="https://img.shields.io/badge/Prisma_7-5E4E70?style=for-the-badge&amp;logo=prisma&amp;logoColor=white">
+  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-18181B?style=for-the-badge&amp;logo=vercel&amp;logoColor=white">
+</p>
 
-![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs)
-![React 19](https://img.shields.io/badge/React-19-20232a?logo=react)
-![TypeScript 5](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-database-4169E1?logo=postgresql&logoColor=white)
-
-[**Visit the site**](https://draftory.lol/)
-
-</div>
+<p align="center"><a href="https://draftory.lol/"><strong>Visit Draftory</strong></a></p>
 
 ## 〢 💭 What is Draftory?
 
