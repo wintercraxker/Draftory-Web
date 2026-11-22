@@ -100,4 +100,3 @@ Draftory does not have a project-wide open-source license. See the [third-party 
 Built by [wintercraxker](https://github.com/wintercraxker). Thanks to the maintainers of Next.js, React, TypeScript, Tailwind CSS, Prisma, and PostgreSQL, and to the Dota 2 community.
 
 <div align="center"><strong>DRAFTORY</strong> · Built for the people you play with.</div>
-:))
